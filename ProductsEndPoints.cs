@@ -82,6 +82,16 @@ public static class ProductsEndPoints
 
             return Results.Ok(products);
         });
+
+        app.MapPost("/checkorderfulfillment", async (OrderRequest orderRequest, AppDbContext dbContext) =>
+        {
+            var product = await dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == orderRequest.ProductId);
+            if (product != null && product.StockAvailable >= orderRequest.Quantity)
+            {
+                return Results.Ok("Order can be fulfilled.");
+            }
+            return Results.BadRequest("Order cannot be fulfilled.");
+        });
     }
 }
 
